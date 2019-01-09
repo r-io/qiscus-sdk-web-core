@@ -1156,7 +1156,7 @@ class QiscusSDK extends EventEmitter {
           `[file] ${url} [/file]`, 
           null, 
           'file_attachment', 
-          { "url": url }, 
+          JSON.stringify({ "url": url }), 
           null
         );
       } else {
