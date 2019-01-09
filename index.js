@@ -1151,7 +1151,14 @@ class QiscusSDK extends EventEmitter {
         var url = JSON.parse(xhr.response).results.file.url;
         self.emit("fileupload", url);
         // send
-        return self.sendComment(roomId, `[file] ${url} [/file]`);
+        return self.sendComment(
+          roomId, 
+          `[file] ${url} [/file]`, 
+          null, 
+          'file_attachment', 
+          { "url": url }, 
+          null
+        );
       } else {
         return Promise.reject(xhr);
       }
