@@ -1267,6 +1267,18 @@ class QiscusSDK extends EventEmitter {
   unsubscribeEvent(...args) {
     this.customEventAdapter.unsubscribeEvent(...args)
   }
+
+  setUserDeviceIdentityToken(token, device_token, device_platform) {
+    return request
+      .post(`${this.baseURL}/api/v2/mobile/set_user_device_token`)
+      .send({ token, device_token, device_platform })
+      .set("qiscus_sdk_app_id", `${this.AppId}`)
+      .set("qiscus_sdk_version", `${this.version}`)
+      .then(
+        res => Promise.resolve(res.body.results),
+        err => Promise.reject(err)
+      );
+  }
 }
 
 class FileUploaded {
