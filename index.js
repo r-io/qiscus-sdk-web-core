@@ -510,13 +510,13 @@ class QiscusSDK extends EventEmitter {
   synchronize(last_id) {
     const idToBeSynced = last_id || this.last_received_comment_id;
     this.userAdapter.sync(idToBeSynced)
-    .then(comments => {
-      if (!comments) return false;
-      if (comments.length > 0) this.emit("newmessages", comments);
-    })
-    .catch((error) => {
-      console.error('Error when syncing', error);
-    });
+      .then(comments => {
+        if (!comments) return false;
+        if (comments.length > 0) this.emit("newmessages", comments);
+      })
+      .catch((error) => {
+        console.error('Error when syncing', error);
+      });
   }
 
   synchronizeEvent(last_id) {
@@ -1144,7 +1144,7 @@ class QiscusSDK extends EventEmitter {
    * @returns Promise
    * @memberof QiscusSDK
    */
-  uploadFile(roomId, file, uniqueId) {
+  uploadFile(roomId, file, uniqueId, onError) {
     const self = this;
     var formData = new FormData();
     formData.append("file", file);
@@ -1160,16 +1160,16 @@ class QiscusSDK extends EventEmitter {
         var url = JSON.parse(xhr.response).results.file.url;
         self.emit("fileupload", url);
         // send
-        return self.sendComment(
+        self.sendComment(
           roomId,
           `[file] ${url} [/file]`,
           uniqueId,
           'file_attachment',
           JSON.stringify({ "url": url }),
           null
-        );
+        ).catch(error => onError(error));
       } else {
-        return Promise.reject(xhr);
+        onError(xhr);
       }
     };
     xhr.send(formData);
