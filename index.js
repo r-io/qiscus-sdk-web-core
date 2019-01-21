@@ -1135,7 +1135,7 @@ class QiscusSDK extends EventEmitter {
    * @returns Promise
    * @memberof QiscusSDK
    */
-  uploadFile(roomId, file, uniqueId) {
+  uploadFile(roomId, file, uniqueId, onError) {
     const self = this;
     var formData = new FormData();
     formData.append("file", file);
@@ -1151,16 +1151,16 @@ class QiscusSDK extends EventEmitter {
         var url = JSON.parse(xhr.response).results.file.url;
         self.emit("fileupload", url);
         // send
-        return self.sendComment(
+        self.sendComment(
           roomId,
           `[file] ${url} [/file]`,
           uniqueId,
           'file_attachment',
           JSON.stringify({ "url": url }),
           null
-        );
+        ).catch(error => onError(error));
       } else {
-        return Promise.reject(xhr);
+        onError(xhr);
       }
     };
     xhr.send(formData);
