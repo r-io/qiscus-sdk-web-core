@@ -1172,6 +1172,9 @@ class QiscusSDK extends EventEmitter {
         onError(xhr);
       }
     };
+    xhr.onerror = function (event) {
+      onError(event);
+    };
     xhr.send(formData);
   }
 
