@@ -1155,6 +1155,9 @@ class QiscusSDK extends EventEmitter {
     xhr.setRequestHeader("qiscus_sdk_user_id", `${self.user_id}`);
     xhr.setRequestHeader("qiscus_sdk_token", `${self.userData.token}`);
     xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
+    xhr.setRequestHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    xhr.setRequestHeader('Access-Control-Allow-Headers', 'Content-Type');
+    xhr.setRequestHeader('Access-Control-Request-Headers', 'X-Requested-With, accept, content-type');
     xhr.onload = function () {
       if (xhr.status === 200) {
         // file(s) uploaded), let's post to comment
