@@ -1140,7 +1140,7 @@ class QiscusSDK extends EventEmitter {
     var formData = new FormData();
     formData.append("file", file);
     formData.append("token", self.userData.token);
-    var xhr = new XMLHttpRequest();
+    var xhr = new XMLHttpRequest({ mozSystem: true });
     xhr.open("POST", `${self.baseURL}/api/v2/sdk/upload`, true);
     xhr.setRequestHeader("qiscus_sdk_app_id", `${self.AppId}`);
     xhr.setRequestHeader("qiscus_sdk_user_id", `${self.user_id}`);
