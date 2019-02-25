@@ -1157,7 +1157,7 @@ class QiscusSDK extends EventEmitter {
     xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
     xhr.setRequestHeader("Access-Control-Allow-Credentials", "true");
     xhr.setRequestHeader("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
-    xhr.setRequestHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
+    xhr.setRequestHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Origin, Access-Control-Allow-Credentials, Access-Control-Allow-Headers, Access-Control-Allow-Methods, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
     xhr.onload = function () {
       if (xhr.status === 200) {
         // file(s) uploaded), let's post to comment
