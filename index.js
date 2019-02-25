@@ -1149,15 +1149,12 @@ class QiscusSDK extends EventEmitter {
     var formData = new FormData();
     formData.append("file", file);
     formData.append("token", self.userData.token);
-    var xhr = new XMLHttpRequest({ mozSystem: true });
-    xhr.open("POST", `http://cors.io/?${self.baseURL}/api/v2/sdk/upload`, true);
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", `${self.baseURL}/api/v2/sdk/upload`, true);
     xhr.setRequestHeader("qiscus_sdk_app_id", `${self.AppId}`);
     xhr.setRequestHeader("qiscus_sdk_user_id", `${self.user_id}`);
     xhr.setRequestHeader("qiscus_sdk_token", `${self.userData.token}`);
     xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
-    xhr.setRequestHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    xhr.setRequestHeader('Access-Control-Allow-Headers', 'Content-Type');
-    xhr.setRequestHeader('Access-Control-Request-Headers', 'X-Requested-With, accept, content-type');
     xhr.onload = function () {
       if (xhr.status === 200) {
         // file(s) uploaded), let's post to comment
