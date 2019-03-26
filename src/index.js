@@ -1138,28 +1138,38 @@ class QiscusSDK {
    * @returns Promise
    * @memberof QiscusSDK
    */
-  uploadFile (roomId, file) {
-    const self = this
-    var formData = new FormData()
-    formData.append('file', file)
-    formData.append('token', self.userData.token)
-    var xhr = new XMLHttpRequest()
-    xhr.open('POST', `${self.baseURL}/api/v2/sdk/upload`, true)
-    xhr.setRequestHeader('qiscus_sdk_app_id', `${self.AppId}`)
-    xhr.setRequestHeader('qiscus_sdk_user_id', `${self.user_id}`)
-    xhr.setRequestHeader('qiscus_sdk_token', `${self.userData.token}`)
+  uploadFile(roomId, file, uniqueId, onError) {
+    const self = this;
+    var formData = new FormData();
+    formData.append("file", file);
+    formData.append("token", self.userData.token);
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", `${self.baseURL}/api/v2/sdk/upload`, true);
+    xhr.setRequestHeader("qiscus_sdk_app_id", `${self.AppId}`);
+    xhr.setRequestHeader("qiscus_sdk_user_id", `${self.user_id}`);
+    xhr.setRequestHeader("qiscus_sdk_token", `${self.userData.token}`);
     xhr.onload = function () {
       if (xhr.status === 200) {
         // file(s) uploaded), let's post to comment
-        var url = JSON.parse(xhr.response).results.file.url
-        self.events.emit('fileupload', url)
+        var url = JSON.parse(xhr.response).results.file.url;
+        self.emit("fileupload", url);
         // send
-        return self.sendComment(roomId, `[file] ${url} [/file]`)
+        self.sendComment(
+          roomId,
+          `[file] ${url} [/file]`,
+          uniqueId,
+          'file_attachment',
+          JSON.stringify({ "url": url }),
+          null
+        ).catch(error => onError(error));
       } else {
-        return Promise.reject(xhr)
+        onError(xhr);
       }
-    }
-    xhr.send(formData)
+    };
+    xhr.onerror = function (event) {
+      onError(event);
+    };
+    xhr.send(formData);
   }
 
   addUploadedFile (name, roomId) {
