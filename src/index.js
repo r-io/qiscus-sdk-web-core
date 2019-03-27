@@ -747,16 +747,17 @@ class QiscusSDK {
     })
   }
 
-  async loadRoomList(params = {}) {
-    const rooms = await this.userAdapter.loadRoomList(params)
-    return rooms.map(room => {
-      room.last_comment_id = room.last_comment.id
-      room.last_comment_message = room.last_comment.message
-      room.last_comment_message_created_at = room.last_comment.timestamp
-      room.room_type = room.chat_type
-      room.comments = []
-      return new Room(room)
-    })
+  loadRoomList(params = {}) {
+    return this.userAdapter.loadRoomList(params)
+      .then(rooms => Promise.resolve(rooms.map(room => {
+        room.last_comment_id = room.last_comment.id
+        room.last_comment_message = room.last_comment.message
+        room.last_comment_message_created_at = room.last_comment.timestamp
+        room.room_type = room.chat_type
+        room.comments = []
+        return new Room(room)
+      })))
+      .catch(err => Promise.reject(err))
   }
 
   loadComments(roomId, options = {}) {
