@@ -1165,7 +1165,7 @@ class QiscusSDK {
       if (xhr.status === 200) {
         // file(s) uploaded), let's post to comment
         var url = JSON.parse(xhr.response).results.file.url;
-        self.emit("fileupload", url);
+        self.events.emit("fileupload", url);
         // send
         self.sendComment(
           roomId,
