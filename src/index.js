@@ -27,7 +27,7 @@ class QiscusSDK {
    * Creates an instance of QiscusSDK.
    * @memberof QiscusSDK
    */
-  constructor() {
+  constructor () {
     this.events = mitt()
     this.rooms = []
     this.selected = null
@@ -82,7 +82,7 @@ class QiscusSDK {
    * @param {any} config - Qiscus SDK Configurations
    * @return {void}
    */
-  init(config) {
+  init (config) {
     // set AppID
     if (!config.AppId) throw new Error('Please provide valid AppId')
     this.AppId = config.AppId
@@ -106,11 +106,11 @@ class QiscusSDK {
     // window.setInterval(this.clearRoomsCache.bind(this), 90000);
   }
 
-  readComment(roomId, commentId) {
+  readComment (roomId, commentId, isByPass = false) {
     const self = this
     const isSelected = self.selected || self.selected.id !== roomId
     const isChannel = self.selected.isChannel
-    if (!isSelected || isChannel) return false
+    if (!isByPass && (!isSelected || isChannel)) return false
     self.userAdapter.updateCommentStatus(roomId, commentId, null)
       .then(res => {
         // ambil semua yang belum di read selain komen ini, kemudian mark as read
@@ -118,7 +118,7 @@ class QiscusSDK {
       })
   }
 
-  receiveComment(roomId, commentId) {
+  receiveComment (roomId, commentId) {
     const self = this
     const isChannel = (self.selected) ? self.selected.isChannel : false
     if (isChannel) return false
@@ -128,7 +128,7 @@ class QiscusSDK {
       })
   }
 
-  setEventListeners() {
+  setEventListeners () {
     const self = this
     self.events.on('start-init', function (response) {
       self.HTTPAdapter = new HttpAdapter({
@@ -406,18 +406,18 @@ class QiscusSDK {
     })
   }
 
-  onReconnectMqtt() {
+  onReconnectMqtt () {
     if (!this.selected) return
     if (this.options.onReconnectCallback) this.options.onReconnectedCallback()
     this.loadComments(this.selected.id)
   }
 
-  _callNewMessagesCallback(comments) {
+  _callNewMessagesCallback (comments) {
     if (this.options.newMessagesCallback) { this.options.newMessagesCallback(comments) }
     // let's sort the comments
   }
 
-  updateLastReceivedComment(id) {
+  updateLastReceivedComment (id) {
     if (this.last_received_comment_id < id) this.last_received_comment_id = id
   }
   /**
@@ -428,7 +428,7 @@ class QiscusSDK {
    * @param {string} avatar_url - the url for chat avatar (optional)
    * @return {void}
    */
-  setUser(userId, key, username, avatarURL, extras) {
+  setUser (userId, key, username, avatarURL, extras) {
     const self = this
     self.events.emit('start-init')
 
@@ -454,7 +454,7 @@ class QiscusSDK {
       })
   }
 
-  setUserWithIdentityToken(data) {
+  setUserWithIdentityToken (data) {
     if (!data || !('user' in data)) return this.events.emit('login-error', data)
     this.email = data.user.email
     this.user_id = data.user.email
@@ -465,7 +465,7 @@ class QiscusSDK {
     this.events.emit('login-success', data)
   }
 
-  logout() {
+  logout () {
     this.selected = null
     this.isInit = false
     this.isLogin = false
@@ -473,7 +473,7 @@ class QiscusSDK {
   }
 
   // Activate Sync Feature if `http` or `both` is chosen as sync value when init
-  activateSync() {
+  activateSync () {
     const self = this
     if (self.isSynced) return false
     self.isSynced = true
@@ -481,7 +481,7 @@ class QiscusSDK {
     self.eventsync = window.setInterval(() => self.synchronizeEvent(), 3500)
   }
 
-  disableSync() {
+  disableSync () {
     const self = this
     self.isSynced = false
     window.clearInterval(self.httpsync)
@@ -492,7 +492,7 @@ class QiscusSDK {
    * This method let us get new comments from server
    * If comment count > 0 then we have new message
    */
-  synchronize(lastId) {
+  synchronize (lastId) {
     const idToBeSynced = lastId || this.last_received_comment_id
     this.userAdapter.sync(idToBeSynced)
       .then(comments => {
@@ -504,7 +504,7 @@ class QiscusSDK {
       })
   }
 
-  synchronizeEvent(lastId) {
+  synchronizeEvent (lastId) {
     const self = this
     const idToBeSynced = lastId || this.last_received_comment_id
     this.userAdapter
@@ -534,13 +534,13 @@ class QiscusSDK {
       })
   }
 
-  disconnect() {
+  disconnect () {
     this.isInit = false
     this.userData = {}
     this.selected = null
   }
 
-  setActiveRoom(room) {
+  setActiveRoom (room) {
     // when we activate a room
     // we need to unsubscribe from typing event
     if (this.selected) {
@@ -605,7 +605,7 @@ class QiscusSDK {
    * @param distinct_id {string | optional} - unique string to differentiate chat room with same target
    * @return room <Room>
    */
-  chatTarget(userId, options = {}) {
+  chatTarget (userId, options = {}) {
     // make sure data already loaded first (user already logged in)
     if (this.userData.length != null) return false
 
@@ -658,7 +658,7 @@ class QiscusSDK {
    * @returns Room <Room>
    * @memberof QiscusSDK
    */
-  chatGroup(id) {
+  chatGroup (id) {
     const self = this
     if (!self.isInit) return
     return self.getRoomById(id).then(
@@ -673,7 +673,7 @@ class QiscusSDK {
    * @param {int} id - Room Id
    * @return {Room} Room data
    */
-  getRoomById(id) {
+  getRoomById (id) {
     const self = this
     self.isLoading = true
     self.isTypingStatus = ''
@@ -710,7 +710,7 @@ class QiscusSDK {
    * @param {string} avatarURL
    * @return {Room} Room data
    */
-  getOrCreateRoomByUniqueId(id, roomName, avatarURL) {
+  getOrCreateRoomByUniqueId (id, roomName, avatarURL) {
     const self = this
     self.isLoading = true
     self.isTypingStatus = ''
@@ -732,7 +732,7 @@ class QiscusSDK {
       })
   }
 
-  getOrCreateRoomByChannel(channel, name, avatarURL) {
+  getOrCreateRoomByChannel (channel, name, avatarURL) {
     return this.getOrCreateRoomByUniqueId(channel, name, avatarURL)
   }
 
@@ -741,13 +741,13 @@ class QiscusSDK {
    *
    * @memberof QiscusSDK
    */
-  sortComments() {
+  sortComments () {
     this.selected && this.selected.comments.sort(function (leftSideComment, rightSideComment) {
       return leftSideComment.unix_timestamp - rightSideComment.unix_timestamp
     })
   }
 
-  loadRoomList(params = {}) {
+  loadRoomList (params = {}) {
     return this.userAdapter.loadRoomList(params)
       .then(rooms => Promise.resolve(rooms.map(room => {
         room.last_comment_id = room.last_comment.id
@@ -760,7 +760,7 @@ class QiscusSDK {
       .catch(err => Promise.reject(err))
   }
 
-  loadComments(roomId, options = {}) {
+  loadComments (roomId, options = {}) {
     const self = this
     return self.userAdapter.loadComments(roomId, options).then(
       response => {
@@ -775,7 +775,7 @@ class QiscusSDK {
     )
   }
 
-  loadMore(lastCommentId, options = {}) {
+  loadMore (lastCommentId, options = {}) {
     options.last_comment_id = lastCommentId
     options.after = false
     return this.loadComments(this.selected.id, options)
@@ -788,7 +788,7 @@ class QiscusSDK {
    * @param {any} [params={query,room_id,last_comment_id}]
    * @memberof qiscusSDK
    */
-  async searchMessages(params = {}) {
+  async searchMessages (params = {}) {
     console.warn('Deprecated: search message will be removed on next release')
     const messages = await this.userAdapter.searchMessages(params)
     return messages.map(message => {
@@ -796,14 +796,14 @@ class QiscusSDK {
     })
   }
 
-  updateProfile(user) {
+  updateProfile (user) {
     return this.userAdapter.updateProfile(user)
       .then(res => {
         this.events.emit('profile-updated', user)
       }, err => console.log(err))
   }
 
-  getNonce() {
+  getNonce () {
     return request
       .post(`${this.baseURL}/api/v2/sdk/auth/nonce`)
       .send()
@@ -815,7 +815,7 @@ class QiscusSDK {
       )
   }
 
-  verifyIdentityToken(identityToken) {
+  verifyIdentityToken (identityToken) {
     return request
       .post(`${this.baseURL}/api/v2/sdk/auth/verify_identity_token`)
       .send({
@@ -840,7 +840,7 @@ class QiscusSDK {
    * @return {Promise}
    */
   // #region sendComment
-  sendComment(
+  sendComment (
     topicId,
     commentMessage,
     uniqueId,
@@ -918,7 +918,7 @@ class QiscusSDK {
   }
   // #endregion
 
-  getUsers(query = '', page = 1, limit = 20) {
+  getUsers (query = '', page = 1, limit = 20) {
     return this.HTTPAdapter.get_request('api/v2/sdk/get_user_list')
       .query({
         token: this.userData.token,
@@ -931,19 +931,19 @@ class QiscusSDK {
       })
   }
 
-  setUserDeviceIdentityToken(token, device_token, device_platform) {
+  setUserDeviceIdentityToken (token, device_token, device_platform) {
     return request
       .post(`${this.baseURL}/api/v2/mobile/set_user_device_token`)
       .send({ token, device_token, device_platform })
-      .set("qiscus_sdk_app_id", `${this.AppId}`)
-      .set("qiscus_sdk_version", `${this.version}`)
+      .set('qiscus_sdk_app_id', `${this.AppId}`)
+      .set('qiscus_sdk_version', `${this.version}`)
       .then(
         res => Promise.resolve(res.body.results),
         err => Promise.reject(err)
-      );
+      )
   }
 
-  resendComment(comment) {
+  resendComment (comment) {
     var self = this
     var room = self.selected
     var pendingComment = room.comments.find(
@@ -976,7 +976,7 @@ class QiscusSDK {
       )
   }
 
-  prepareCommentToBeSubmitted(comment) {
+  prepareCommentToBeSubmitted (comment) {
     var commentToBeSubmitted, uniqueId
     commentToBeSubmitted = new Comment(comment)
     // We're gonna use timestamp for uniqueId for now.
@@ -997,11 +997,11 @@ class QiscusSDK {
    * @param {id, room_name, avatar_url, options} args
    * @return Promise
    */
-  updateRoom(args) {
+  updateRoom (args) {
     return this.roomAdapter.updateRoom(args)
   }
 
-  removeSelectedRoomParticipants(values = [], payload = 'id') {
+  removeSelectedRoomParticipants (values = [], payload = 'id') {
     if (!values) {
       return Promise.reject(new Error('Please gives an array values.'))
     }
@@ -1024,7 +1024,7 @@ class QiscusSDK {
    * @param {string[]} emails - Participant to be invited
    * @returns {Promise.<Room, Error>} - Room detail
    */
-  createGroupRoom(name, emails, options) {
+  createGroupRoom (name, emails, options) {
     const self = this
     if (!this.isLogin) throw new Error('Please initiate qiscus SDK first')
     return new GroupChatBuilder(this.roomAdapter)
@@ -1046,7 +1046,7 @@ class QiscusSDK {
    * @returns Promise
    * @memberof QiscusSDK
    */
-  addParticipantsToGroup(roomId, emails) {
+  addParticipantsToGroup (roomId, emails) {
     const self = this
     if (!Array.isArray(emails)) { throw new Error(`emails' must be type of Array`) }
     return self.roomAdapter.addParticipantsToGroup(roomId, emails)
@@ -1064,7 +1064,7 @@ class QiscusSDK {
    * @returns Promise
    * @memberof QiscusSDK
    */
-  removeParticipantsFromGroup(roomId, emails) {
+  removeParticipantsFromGroup (roomId, emails) {
     const self = this
     if (!Array.isArray(emails)) { throw new Error(`emails' must be type of Array`) }
     return self.roomAdapter.removeParticipantsFromGroup(roomId, emails)
@@ -1082,7 +1082,7 @@ class QiscusSDK {
    * @returns Promise
    * @memberof QiscusSDK
    */
-  getBlockedUser(page = 1, limit = 20) {
+  getBlockedUser (page = 1, limit = 20) {
     const self = this
     return self.userAdapter.getBlockedUser(page, limit)
       .then((res) => {
@@ -1097,7 +1097,7 @@ class QiscusSDK {
    * @returns Promise
    * @memberof QiscusSDK
    */
-  blockUser(email) {
+  blockUser (email) {
     const self = this
     return self.userAdapter.blockUser(email)
       .then((res) => {
@@ -1113,7 +1113,7 @@ class QiscusSDK {
    * @returns Promise
    * @memberof QiscusSDK
    */
-  unblockUser(email) {
+  unblockUser (email) {
     const self = this
     return self.userAdapter.unblockUser(email)
       .then((res) => {
@@ -1122,7 +1122,7 @@ class QiscusSDK {
       }, err => Promise.reject(err))
   }
 
-  upload(file, callback) {
+  upload (file, callback) {
     return request.post(this.uploadURL)
       .attach('file', file)
       .field('token', this.userData.token)
@@ -1151,52 +1151,52 @@ class QiscusSDK {
    * @returns Promise
    * @memberof QiscusSDK
    */
-  uploadFile(roomId, file, uniqueId, onError) {
-    const self = this;
-    var formData = new FormData();
-    formData.append("file", file);
-    formData.append("token", self.userData.token);
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", `${self.baseURL}/api/v2/sdk/upload`, true);
-    xhr.setRequestHeader("qiscus_sdk_app_id", `${self.AppId}`);
-    xhr.setRequestHeader("qiscus_sdk_user_id", `${self.user_id}`);
-    xhr.setRequestHeader("qiscus_sdk_token", `${self.userData.token}`);
+  uploadFile (roomId, file, uniqueId, onError) {
+    const self = this
+    var formData = new FormData()
+    formData.append('file', file)
+    formData.append('token', self.userData.token)
+    var xhr = new XMLHttpRequest()
+    xhr.open('POST', `${self.baseURL}/api/v2/sdk/upload`, true)
+    xhr.setRequestHeader('qiscus_sdk_app_id', `${self.AppId}`)
+    xhr.setRequestHeader('qiscus_sdk_user_id', `${self.user_id}`)
+    xhr.setRequestHeader('qiscus_sdk_token', `${self.userData.token}`)
     xhr.onload = function () {
       if (xhr.status === 200) {
         // file(s) uploaded), let's post to comment
-        var url = JSON.parse(xhr.response).results.file.url;
-        self.events.emit("fileupload", url);
+        var url = JSON.parse(xhr.response).results.file.url
+        self.events.emit('fileupload', url)
         // send
         self.sendComment(
           roomId,
           `[file] ${url} [/file]`,
           uniqueId,
           'file_attachment',
-          JSON.stringify({ "url": url }),
+          JSON.stringify({ 'url': url }),
           null
-        ).catch(error => onError(error));
+        ).catch(error => onError(error))
       } else {
-        onError(xhr);
+        onError(xhr)
       }
-    };
+    }
     xhr.onerror = function (event) {
-      onError(event);
+      onError(event)
     };
-    xhr.send(formData);
+    xhr.send(formData)
   }
 
-  addUploadedFile(name, roomId) {
+  addUploadedFile (name, roomId) {
     this.uploadedFiles.push(new FileUploaded(name, roomId))
   }
 
-  removeUploadedFile(name, roomId) {
+  removeUploadedFile (name, roomId) {
     const index = this.uploadedFiles.findIndex(
       file => file.name === name && file.roomId === roomId
     )
     this.uploadedFiles.splice(index, 1)
   }
 
-  publishTyping(val) {
+  publishTyping (val) {
     this.realtimeAdapter.publishTyping(val)
   }
 
@@ -1209,11 +1209,11 @@ class QiscusSDK {
    * @returns
    * @memberof QiscusSDK
    */
-  getRoomsInfo(params) {
+  getRoomsInfo (params) {
     return this.userAdapter.getRoomsInfo(params)
   }
 
-  deleteComment(roomId, commentUniqueIds, isForEveryone, isHard) {
+  deleteComment (roomId, commentUniqueIds, isForEveryone, isHard) {
     if (!Array.isArray(commentUniqueIds)) { throw new Error(`unique ids' must be type of Array`) }
     return this.userAdapter
       .deleteComment(roomId, commentUniqueIds, isForEveryone, isHard)
@@ -1231,7 +1231,7 @@ class QiscusSDK {
       )
   }
 
-  clearRoomsCache() {
+  clearRoomsCache () {
     // remove all room except currently selected
     if (this.selected) {
       // clear the map
@@ -1248,25 +1248,25 @@ class QiscusSDK {
     }
   }
 
-  exitChatRoom() {
+  exitChatRoom () {
     // remove all subscriber
     this.realtimeAdapter.unsubscribeTyping()
     this.realtimeAdapter.unsubscribeRoomPresence()
     this.selected = null
   }
 
-  clearRoomMessages(roomIds) {
+  clearRoomMessages (roomIds) {
     if (!Array.isArray(roomIds)) { throw new Error('room_ids must be type of array') }
     return this.userAdapter.clearRoomMessages(roomIds)
   }
 
-  logging(message, params = {}) {
+  logging (message, params = {}) {
     if (this.debugMode) {
       console.log(message, params)
     }
   }
 
-  getTotalUnreadCount() {
+  getTotalUnreadCount () {
     return this.roomAdapter.getTotalUnreadCount()
       .then((response) => {
         return Promise.resolve(response)
@@ -1275,25 +1275,25 @@ class QiscusSDK {
       })
   }
 
-  publishEvent(...args) {
+  publishEvent (...args) {
     this.customEventAdapter.publishEvent(...args)
   }
-  subscribeEvent(...args) {
+  subscribeEvent (...args) {
     this.customEventAdapter.subscribeEvent(...args)
   }
-  unsubscribeEvent(...args) {
+  unsubscribeEvent (...args) {
     this.customEventAdapter.unsubscribeEvent(...args)
   }
 
-  get logger() {
+  get logger () {
     if (this.debugMode) return console.log.bind(console, 'Qiscus ->')
     return this.noop
   }
-  noop() { }
+  noop () { }
 }
 
 class FileUploaded {
-  constructor(name, roomId) {
+  constructor (name, roomId) {
     this.name = name
     this.roomId = roomId
     this.progress = 0
