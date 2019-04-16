@@ -111,7 +111,7 @@ class QiscusSDK {
     const isSelected = self.selected || self.selected.id !== roomId
     const isChannel = self.selected.isChannel
     if (!isByPass && (!isSelected || isChannel)) return false
-    self.userAdapter.updateCommentStatus(roomId, commentId, null)
+    return self.userAdapter.updateCommentStatus(roomId, commentId, null)
       .then(res => {
         // ambil semua yang belum di read selain komen ini, kemudian mark as read
         // self.sortComments()
@@ -1181,7 +1181,7 @@ class QiscusSDK {
     }
     xhr.onerror = function (event) {
       onError(event)
-    };
+    }
     xhr.send(formData)
   }
 
