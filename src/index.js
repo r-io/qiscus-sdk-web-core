@@ -108,9 +108,9 @@ class QiscusSDK {
 
   readComment (roomId, commentId, isByPass = false) {
     const self = this
-    const isSelected = self.selected || self.selected.id !== roomId
-    const isChannel = self.selected.isChannel
-    if (!isByPass && (!isSelected || isChannel)) return false
+    const isSelected = isByPass ? true : (self.selected || self.selected.id !== roomId)
+    const isChannel = isByPass ? false : self.selected.isChannel
+    if (!isSelected || isChannel) return false
     return self.userAdapter.updateCommentStatus(roomId, commentId, null)
       .then(res => {
         // ambil semua yang belum di read selain komen ini, kemudian mark as read
