@@ -644,7 +644,6 @@ class QiscusSDK {
           })
         return Promise.resolve(room)
       }, (err) => {
-        console.error('Error when creating room', err)
         self.isLoading = false
         return Promise.reject(err)
       })
